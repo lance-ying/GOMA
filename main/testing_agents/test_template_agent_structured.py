@@ -6,14 +6,14 @@ from tqdm import tqdm
 import traceback
 import os
 import ipdb
-import pickle
+from pickle5 import pickle
 import json
 import pdb
 import random
 import numpy as np
 from pathlib import Path
 sys.path.append("..")
-sys.path.insert(0, f"/home/lance/GOMA/virtualhome/")
+sys.path.insert(0, f"/scratch2/weka/tenenbaum/lanceyin/GOMA/")
 from envs.unity_environment import UnityEnvironment
 '''
 from agents import (
@@ -53,14 +53,12 @@ def get_class_mode(agent_args):
 if __name__ == "__main__":
     args = get_args()
 
-    save_data = True
-    num_proc = 0
+    save_data = False
     num_tries = 1
 
-    args.executable_file = "/home/lance/GOMA/linux_exec.v2.2.5_beta4.x86_64"
+    args.executable_file = "/scratch2/weka/tenenbaum/kunaljha/virtualhome/virtualhome/simulation/unity_simulator/linux_exec.v2.2.4.x86_64"
 
-    args.dataset_path = "/home/lance/GOMA/train_env_task_set_50_full_task.all_apts.0,1,2,4,5.pik"
-
+    args.dataset_path = "/scratch2/weka/tenenbaum/lanceyin/GOMA/train_env_task_set.pik"
     
     args.max_episode_length = 100
 
@@ -267,7 +265,7 @@ if __name__ == "__main__":
             if args.runall == False:
                 episode_list =[args.id]
             else:
-                episode_list =list(np.arrange(len(env_task_set)))
+                episode_list =list(np.arange(len(env_task_set)))
 
             # for episode_id in list(range(276,286)):
             for episode_id in episode_list:

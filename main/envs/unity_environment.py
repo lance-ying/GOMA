@@ -5,7 +5,7 @@ import os
 
 curr_dir = os.path.dirname(os.path.realpath(__file__))
 #sys.path.append(f"{curr_dir}/../../virtualhome/simulation/")
-sys.path.insert(0, f"/home/ec2-user/GOMA/virtualhome/simulation/")
+sys.path.insert(0, f"/scratch2/weka/tenenbaum/lanceyin/virtualhome/virtualhome/simulation/")
 #sys.path.append(f"{curr_dir}/..")
 
 from environment.unity_environment import UnityEnvironment as BaseUnityEnvironment

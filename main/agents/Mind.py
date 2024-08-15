@@ -1,8 +1,6 @@
 from . import belief
 import time
 import numpy as np
-import torch
-import torch.nn.functional as F
 import scipy
 import copy
 import pdb

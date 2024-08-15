@@ -3,7 +3,7 @@ import random
 import sys
 import os
 curr_dir = os.path.dirname(os.path.realpath(__file__))
-sys.path.append(f"{curr_dir}/../../virtualhome/virtualhome/")
+sys.path.append(f"{curr_dir}/../../../virtualhome/virtualhome/")
 from simulation.evolving_graph.utils import load_graph_dict, load_name_equivalence
 from simulation.evolving_graph.environment import (
     EnvironmentState,

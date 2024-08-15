@@ -6,7 +6,6 @@ import json
 import os
 import pandas as pd
 import time
-from openai.error import OpenAIError
 import backoff
 from GPT_message import gpt_message_decode, gpt_pairing_object, gpt_message_encoder
 import pdb

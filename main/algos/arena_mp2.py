@@ -112,7 +112,7 @@ class ArenaMP(object):
         ob = None
         while ob is None:
             ob = self.env.reset(task_id=task_id)
-        print(ob.keys(), self.num_agents)
+        # print(ob.keys(), self.num_agents)
 
         for it, agent in enumerate(self.agents):
             if agent.agent_type != "COELA":
@@ -379,7 +379,7 @@ class ArenaMP(object):
                         dict_messages[it] = None
 
                     end_time = time.time() - start_time
-                    print(f"\nOur MCTS took {end_time} seconds to get actions + messages\n")
+                    # print(f"\nOur MCTS took {end_time} seconds to get actions + messages\n")
 
             elif "RL" in agent.agent_type:
                 if "MCTS" in agent.agent_type or "Random" in agent.agent_type:
@@ -406,7 +406,7 @@ class ArenaMP(object):
         save_messages["template_message"].append(dict_messages)
 
 
-        print(f"\nNatural (GPT encoded) messages: {dict_messages}\nChosen actions: {dict_actions}\n")
+        # print(f"\nNatural (GPT encoded) messages: {dict_messages}\nChosen actions: {dict_actions}\n")
         save_messages["natural_message"].append(dict_messages)
         global saving_step
         saving_step=saving_step-1

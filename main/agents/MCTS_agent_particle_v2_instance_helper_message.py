@@ -15,7 +15,7 @@ import pickle
 import eventlet
 import scipy
 from itertools import repeat
-
+import os
 from scipy.stats import entropy
 from scipy.special import softmax
 from scipy.special import logsumexp
@@ -988,7 +988,7 @@ class MCTS_agent_particle_v2_instance_helper_message:
         cabinets_cnt = len(cabinets)
         # cabinets = np.random.choice(cabinets, int(cabinets_cnt*0.8))
         # cabinets = cabinets[:int(cabinets_cnt)]
-        print("cabinets",cabinets)
+        # print("cabinets",cabinets)
 
         id2node = {node["id"]: node for node in graph["nodes"]}
         for edge in graph["edges"]:
@@ -996,10 +996,10 @@ class MCTS_agent_particle_v2_instance_helper_message:
                 if np.random.choice([0, 1], p=[0.15, 0.85]):
                     self.helper_belief[edge["from_id"]] = [edge["to_id"], edge["relation_type"]]
 
-        print("finished initialization of belief", self.helper_belief)
+        # print("finished initialization of belief", self.helper_belief)
 
     def update_obs(self, obs, output):
-        print("Adding",output)
+        # print("Adding",output)
         has_obj1=False;has_obj2=False;has_relation=False
         relation,obj1_id,obj2_id=output.split('_')
         Node1=None;Node2=None
@@ -1128,8 +1128,9 @@ class MCTS_agent_particle_v2_instance_helper_message:
         # if len(self.message_history) > 0:
         id2class = {k: v['class_name'] for k, v in id2node.items()}
 
+        filepath = os.getcwd() + "/../GPT_message/prompt_goal_inference.txt"
         # def infer_goal():
-        with open("/data/vision/torralba//frames/data_acquisition/SyntheticStories/MultiAgent/project_lance/watch_talk_help/GPT_message/prompt_goal_inference.txt", "r", encoding='utf-8') as f:
+        with open(filepath, "r", encoding='utf-8') as f:
             prompt=f.read()
         # prompt += f"\nHere is the mapping from id to class_name that you will sample targetID and baseItem from: \n {id2class}"
         prompt += f"\nHere is the list of requests for help the human has spoken previously: \n {self.message_history}"
@@ -1237,7 +1238,7 @@ class MCTS_agent_particle_v2_instance_helper_message:
             output=output.replace('\n', '')
             output=json.loads(output)
 
-            print("output", output)
+            # print("output", output)
 
             if output["message_type"] == "share_info":
 
@@ -1316,8 +1317,28 @@ class MCTS_agent_particle_v2_instance_helper_message:
         # Create the particles
         # pdb.set_trace()
 
+
+
+
+        '''
+        
+        THIS IS WHERE WE DO GOAL INFERENCE
+        
+        '''
+
+        # goal_spec = self.goal_spec
+
+        # print("check", self.goal_spec)
         self.belief.update_belief(obs)
 
+        # if self.human_goal is None:
+            
+
+        # additional_goals = self.human_goal
+        # if additional_goals is not None:
+        #     for k, v in additional_goals.items():
+        #         if k not in goal_spec:
+        #             goal_spec[k] = v
         
 
         #print("========================Belief=======================",self.belief.edge_belief)
@@ -1690,9 +1711,21 @@ class MCTS_agent_particle_v2_instance_helper_message:
                 if item in self.goal_belief_objects[0]:
                     add_belief = loc[1] + "_" + str(item) + "_" + str(loc[0])
                     # edge['from_id']+"_"+edge['from_id']+"_"+edge['to_id']
-                    print(add_belief)
+                    # print(add_belief)
                     obs = self.update_obs(obs, add_belief)
                     self.belief.update_belief(obs)
+
+        #     for i in self.goal_belief_objects[0]:
+        #         self.locate_obj(i, graph)
+
+        #     for i in self.goal_belief_objects[1]:
+        #         self.locate_obj(i, graph)
+
+
+            # for edge in self.helper_belief:
+            #     add_belief = edge['from_id']+"_"+edge['from_id']+"_"+edge['to_id']
+            #     obs = self.update_obs(add_belief)
+            #     self.belief.update_belief(obs)
 
         candidate_categories = ["cutleryfork", "cutleryknife", "pudding", "waterglass", "wineglass","plate", "cupcake","apple", "salmon", "bananas", "lime", "condimentbottle", "chips", "condimentshaker", "peach", "plum", "dishbowl","mug", "chocolatesyrup", "creamybuns", "breadslice", "fryingpan"]
 
@@ -1717,7 +1750,7 @@ class MCTS_agent_particle_v2_instance_helper_message:
             if len(comm_items_list)> 0 and np.random.choice([0,1],p=[0.5,0.5])==1:
                 item  = np.random.choice(comm_items_list)
                     # if id2node[item][] in candidate_categories:
-                print("communicate", item, self.helper_belief[item] )
+                # print("communicate", item, self.helper_belief[item] )
                 self.human_belief[item] = self.helper_belief[item]
 
                 share_txt = " {}({}) is {} {}({})".format(id2node[item]["class_name"], item, self.helper_belief[item][1], self.id2node[self.helper_belief[item][0]]["class_name"], self.helper_belief[item][0])
@@ -1726,7 +1759,7 @@ class MCTS_agent_particle_v2_instance_helper_message:
 
             for item in self.goal_belief_objects[1]:
                 if item not in self.helper_belief.keys() and item not in self.ask_item and self.time_last_asked >=10 :
-                    print("Ask", id2node[item]["class_name"])
+                    # print("Ask", id2node[item]["class_name"])
                     self.ask_item.append(item)
                     self.time_last_asked = 0
 
@@ -1737,37 +1770,35 @@ class MCTS_agent_particle_v2_instance_helper_message:
 
         if self.comm_type == "goal-heuristic":
 
-            for i in self.goal_belief_objects[1]:
-                print("check belief helper",i, self.belief.edge_belief[i])
 
             for edge in obs["edges"]:
                 if edge['from_id'] in id2node.keys() and "GRABBABLE" in id2node[edge['from_id']]["properties"] and edge['from_id'] in self.goal_belief_objects[0] and id2node[edge['to_id']]["category"]!="Rooms" and edge['relation_type']!="CLOSE" and edge['relation_type']!="FACING":
                     self.helper_belief[edge['from_id']] = [edge["to_id"], edge['relation_type']]
-                    print(edge['from_id'],self.helper_belief[edge['from_id']], self.id2node[edge['to_id']]["category"])
+                    # print(edge['from_id'],self.helper_belief[edge['from_id']], self.id2node[edge['to_id']]["category"])
 
 
-            print("helper_belief",self.helper_belief)
+            # print("helper_belief",self.helper_belief)
 
 
             for edge in human_obs["edges"]:
                 if edge['from_id'] in id2node.keys() and "GRABBABLE" in id2node[edge['from_id']]["properties"] and edge['from_id'] in self.goal_belief_objects[0] and edge['relation_type']!="CLOSE" and edge['relation_type']!="FACING":
                     self.human_belief[edge['from_id']] = [edge["to_id"], edge['relation_type']]
-                    print(edge['from_id'],self.human_belief[edge['from_id']])
+                    # print(edge['from_id'],self.human_belief[edge['from_id']])
 
 
-            print("human_belief",self.human_belief)
+            # print("human_belief",self.human_belief)
 
 
             for item in self.goal_belief_objects[0]:
                 if item in self.helper_belief.keys():
-                    print("communicate", item, self.helper_belief[item])
+                    # print("communicate", item, self.helper_belief[item])
                     self.human_belief[item] = self.helper_belief[item]
                     share_txt = " {}({}) is {} {}({})".format(id2node[item]["class_name"], item, self.helper_belief[item][1], self.id2node[self.helper_belief[item][0]]["class_name"], self.helper_belief[item][0])
                     return generate_chat_response("You are a helpful robot assistant. Please communicate this information to the human agent in a colloquial and concise fashion: \n"+share_txt)
 
             for item in self.goal_belief_objects[1]:
                 if item not in self.helper_belief.keys() and item not in self.ask_item and self.time_last_asked >=10 :
-                    print("Ask", item, self.human_belief[item])
+                    # print("Ask", item, self.human_belief[item])
                     self.ask_item.append(item)
                     self.time_last_asked = 0
 
@@ -1779,9 +1810,6 @@ class MCTS_agent_particle_v2_instance_helper_message:
 
         if self.comm_type == "goal":
 
-            for i in self.goal_belief_objects[1]:
-                print("check belief helper",i, self.belief.edge_belief[i])
-
 
             for edge in obs["edges"]:
 
@@ -1791,21 +1819,21 @@ class MCTS_agent_particle_v2_instance_helper_message:
                     print(edge['from_id'],self.helper_belief[edge['from_id']], id2node[edge['to_id']]["category"])
 
 
-            print("helper_belief",self.helper_belief)
+            # print("helper_belief",self.helper_belief)
 
 
             for edge in human_obs["edges"]:
                 if edge['from_id'] in id2node.keys() and "GRABBABLE" in id2node[edge['from_id']]["properties"] and edge['from_id'] in self.goal_belief_objects[0] and edge['relation_type']!="CLOSE" and edge['relation_type']!="FACING":
                     self.human_belief[edge['from_id']] = [edge["to_id"], edge['relation_type']]
-                    print(edge['from_id'],self.human_belief[edge['from_id']])
+                    # print(edge['from_id'],self.human_belief[edge['from_id']])
 
 
-            print("human_belief",self.human_belief)
+            # print("human_belief",self.human_belief)
 
 
             for item in self.goal_belief_objects[0]:
                 if item in self.helper_belief.keys() and item not in self.human_belief.keys():
-                    print("communicate", item, self.helper_belief[item])
+                    # print("communicate", item, self.helper_belief[item])
                     self.human_belief[item] = self.helper_belief[item]
 
                     share_txt = " {}({}) is {} {}({})".format(id2node[item]["class_name"], item, self.helper_belief[item][1], self.id2node[self.helper_belief[item][0]]["class_name"], self.helper_belief[item][0])
@@ -1813,11 +1841,13 @@ class MCTS_agent_particle_v2_instance_helper_message:
 
             for item in self.goal_belief_objects[1]:
                 if item not in self.helper_belief.keys() and item not in self.ask_item and self.time_last_asked >=10 :
-                    print("Ask", id2node[item]["class_name"])
+                    # print("Ask", id2node[item]["class_name"])
                     self.ask_item.append(item)
                     self.time_last_asked = 0
 
                     return gpt_message_encoder.generate_chat_response("You are a helpful robot assistant. You would like to know if the human agent have information about the location of {}({}). Please ask in a colloquial and concise fashion: \n".format(id2node[item]["class_name"], item))
+
+
 
 
         return None

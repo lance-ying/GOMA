@@ -1258,7 +1258,7 @@ class MCTS_agent_particle_v2_instance_human_message:
             output=output.replace('\n', '')
             output=json.loads(output)
 
-            print("human_output", output)
+            # print("human_output", output)
 
             if output["message_type"] == "share_info":
 
@@ -1313,7 +1313,7 @@ class MCTS_agent_particle_v2_instance_human_message:
                             obs["edges"].append({'from_id':int(obj1_id),'to_id':RoomNode["id"],'relation_type':"INSIDE"})
                         obs["edges"].append({'from_id':int(obj1_id),'to_id':int(obj2_id),'relation_type':relation.upper()})
 
-                        print("added_edge", {'from_id':int(obj1_id),'to_id':int(obj2_id),'relation_type':relation.upper()})
+                        # print("added_edge", {'from_id':int(obj1_id),'to_id':int(obj2_id),'relation_type':relation.upper()})
                         self.cached_comm.append(int(obj1_id))
 
                         #time.sleep(100000000)
@@ -1328,8 +1328,8 @@ class MCTS_agent_particle_v2_instance_human_message:
 
         # print("check belief",470, self.belief.edge_belief[470])
 
-        for i in self.cached_comm:
-            print("check belief",i, self.belief.edge_belief[i])
+        # for i in self.cached_comm:
+        #     print("check belief",i, self.belief.edge_belief[i])
         # TODO: maybe we will want to keep the previous belief graph to avoid replanning
         # self.sim_env.reset(self.previous_belief_graph, {0: goal_spec, 1: goal_spec})
 
